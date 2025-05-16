@@ -1,29 +1,36 @@
 import express from 'express';
-import dotenv from 'dotenv';
-import { userRouter } from './routes/user.routes';
 import { AppDataSource } from './data-source';
-
-dotenv.config();
+import userRoutes from './routes/user.routes'; // Adjust based on your routes
+import followRoutes from './routes/follow.routes';
+import postRoutes from './routes/posts.routes';
+import likeRoutes from './routes/like.routes';
+import activityRoutes from './routes/activity.routes';
+import feedRoutes from './routes/feed.routes';
 
 const app = express();
+
 app.use(express.json());
 
+// Initialize the database connection
 AppDataSource.initialize()
   .then(() => {
-    console.log('Data Source has been initialized!');
+    console.log('Database connection initialized successfully');
+
+    // Register routes
+    app.use('/api/users', userRoutes);
+    app.use('/api/follows', followRoutes);
+    app.use('/api/posts', postRoutes);
+    app.use('/api/likes', likeRoutes);
+    app.use('/api/activities', activityRoutes);
+    app.use('/api/feed', feedRoutes);
+
+    // Start the server
+    const PORT = 3000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
-  .catch((err) => {
-    console.error('Error during Data Source initialization:', err);
+  .catch((error) => {
+    console.error('Error initializing database connection:', error);
+    process.exit(1);
   });
-
-app.get('/', (req, res) => {
-  res.send('Welcome to the Social Media Platform API! Server is running successfully.');
-});
-
-app.use('/api/users', userRouter);
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});

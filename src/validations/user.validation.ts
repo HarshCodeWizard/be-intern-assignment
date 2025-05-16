@@ -16,6 +16,11 @@ export const createUserSchema = Joi.object({
     'string.email': 'Please provide a valid email address',
     'string.max': 'Email cannot exceed 255 characters',
   }),
+  password: Joi.string().required().min(6).max(255).messages({
+    'string.empty': 'Password is required',
+    'string.min': 'Password must be at least 6 characters long',
+    'string.max': 'Password cannot exceed 255 characters',
+  }),
 });
 
 export const updateUserSchema = Joi.object({
